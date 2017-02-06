@@ -19,6 +19,7 @@ public class MyData {
 
     MyData(String title, int viewType){
         this.title=title;
+        this.viewType=viewType;
 
     }
 
