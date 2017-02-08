@@ -50,7 +50,7 @@
             android:paddingLeft="0px"
             android:paddingRight="5dp" >
 
-            <TextView
+            <TextView android:textColor="@drawable/selector_text"
                 android:id="@+id/headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
