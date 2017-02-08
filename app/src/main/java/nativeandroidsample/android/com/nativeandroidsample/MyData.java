@@ -1,13 +1,33 @@
 package nativeandroidsample.android.com.nativeandroidsample;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by qainfotech on 3/2/17.
  */
 
 public class MyData {
 
-    private String title;
+    private String subtitle;
+    private Drawable drawable;
+    private String headline;
     private int viewType;
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public Drawable getDrawable() {
+        return drawable;
+    }
+
+    public void setDrawable(Drawable drawable) {
+        this.drawable = drawable;
+    }
 
     public int getViewType() {
         return viewType;
@@ -17,17 +37,26 @@ public class MyData {
         this.viewType = viewType;
     }
 
-    MyData(String title, int viewType){
-        this.title=title;
+    MyData(String headline, String subtitle, Drawable drawable, int viewType){
+        this.headline =headline;
+        this.subtitle =subtitle;
+        this.drawable =drawable;
         this.viewType=viewType;
 
     }
 
-    public String getTitle() {
-        return title;
+
+    MyData(int viewType){
+        this.headline =headline;
+        this.viewType=viewType;
+
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline(String headline) {
+        this.headline = headline;
     }
 }

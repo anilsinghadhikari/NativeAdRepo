@@ -2,6 +2,7 @@ package nativeandroidsample.android.com.nativeandroidsample;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,13 +17,13 @@ import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.formats.NativeCustomTemplateAd;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<MyData> myDataList;
     private ListView mListView;
-    private String mAdUnitId="6499/example/native-backfill";
+//    private String mAdUnitId="/6499/example/native-backfill";
+    private String mAdUnitId="/6499/example/native";
     private String temlateID="10063170";
     int AD_TYPE=0;
     int DATA_TYPE=1;
@@ -37,10 +38,12 @@ public class MainActivity extends AppCompatActivity {
         myDataList= new ArrayList<>();
         for (int i = 0; i < 25; i++) {
             MyData myData=null;
-            if(i==3 || i==5 || i==7)
-                myData=new MyData("Data "+i, AD_TYPE);
+            if(i==3 || i==5 || i==7 || i==20)
+                myData = new MyData(AD_TYPE);
             else
-                myData = new MyData("Data "+i,DATA_TYPE);
+            myData=new MyData("Country "+i, "State "+i, ContextCompat.getDrawable(this, R.drawable.appicon36), DATA_TYPE);
+
+
             myDataList.add(myData);
         }
 
@@ -87,38 +90,50 @@ public class MainActivity extends AppCompatActivity {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 viewHolder = new MyCustomViewHolder();
                 view = (LinearLayout) inflater.inflate(R.layout.item_normal, parent, false);
-                viewHolder.title = (TextView) view.findViewById(R.id.title);
-//                    view.setTag(viewHolder);
+                viewHolder.image= (ImageView) view.findViewById(R.id.image);
+                viewHolder.price= (TextView) view.findViewById(R.id.price);
+                viewHolder.subtitle= (TextView) view.findViewById(R.id.subtitle);
+                viewHolder.headline= (TextView) view.findViewById(R.id.headline);
+                viewHolder.body= (TextView) view.findViewById(R.id.body);//                    view.setTag(viewHolder);
             }else if(getItemViewType(position)==AD_TYPE){
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 viewHolder = new MyCustomViewHolder();
                 view = (LinearLayout) inflater.inflate(R.layout.item_ad, parent, false);
-                viewHolder.title= (TextView) view.findViewById(R.id.subtitle);
+                viewHolder.image= (ImageView) view.findViewById(R.id.image);
+                viewHolder.price= (TextView) view.findViewById(R.id.price);
+                viewHolder.subtitle= (TextView) view.findViewById(R.id.subtitle);
+                viewHolder.headline= (TextView) view.findViewById(R.id.headline);
+                viewHolder.body= (TextView) view.findViewById(R.id.body);
 //                    view.setTag(viewHolder);
             }
-             /*   viewHolder = new MyCustomViewHolder();
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = (LinearLayout) inflater.inflate(R.layout.item_ad, parent, false);
-                viewHolder.title= (TextView) view.findViewById(R.id.subtitle);
-                view.setTag(viewHolder);
-*/
-           /* }else{*/
-//                viewHolder = (MyCustomViewHolder) view.getTag();
-//            }
-//            viewHolder.title.setText(getItem(position).getTitle());
+
+         /*   LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            viewHolder = new MyCustomViewHolder();
+            view = (LinearLayout) inflater.inflate(R.layout.item_ad, parent, false);
+            viewHolder.image= (ImageView) view.findViewById(R.id.image);
+            viewHolder.price= (TextView) view.findViewById(R.id.price);
+            viewHolder.subtitle= (TextView) view.findViewById(R.id.subtitle);
+            viewHolder.headline= (TextView) view.findViewById(R.id.headline);
+            viewHolder.body= (TextView) view.findViewById(R.id.body);*/
 
             if(item.getViewType()==DATA_TYPE) {
-                viewHolder.title.setText(getItem(position).getTitle());
+                viewHolder.headline.setText(getItem(position).getHeadline());
+                viewHolder.subtitle.setText(getItem(position).getSubtitle());
+                viewHolder.image.setImageDrawable(getItem(position).getDrawable());
             }else{
                 if(nativeCustomTemplateAd!=null) {
                     Log.d("nativeCustomTemplateAd", "inside getView()");
 
-                    viewHolder.title.setText(nativeCustomTemplateAd.getText("Headline"));
-
-                    viewHolder.title.setOnClickListener(new View.OnClickListener() {
+                    viewHolder.headline.setText(nativeCustomTemplateAd.getText("Headline"));
+                    viewHolder.subtitle.setText(nativeCustomTemplateAd.getText("Caption"));
+                    viewHolder.image.setImageDrawable(nativeCustomTemplateAd.getImage("MainImage").getDrawable());
+                    nativeCustomTemplateAd.recordImpression();
+                    viewHolder.headline.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             nativeCustomTemplateAd.performClick("anil");
+
+
                         }
                     });
                 }
@@ -134,17 +149,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAd() {
-        AdLoader adLoader = new AdLoader.Builder(MainActivity.this, "/6499/example/native")
-                .forCustomTemplateAd("10063170",
+        AdLoader adLoader = new AdLoader.Builder(MainActivity.this, mAdUnitId)
+                .forCustomTemplateAd(temlateID,
                         new NativeCustomTemplateAd.OnCustomTemplateAdLoadedListener() {
 
 
                             @Override
                             public void onCustomTemplateAdLoaded(NativeCustomTemplateAd ad) {
-                                nativeCustomTemplateAd=ad;
+                                nativeCustomTemplateAd = ad;
                                 Log.d("nativeCustomTemplateAd", "inside onCustomTemplateAdLoaded");
-                                if(mainAdapter!=null)
+                                if (mainAdapter != null)
                                     mainAdapter.notifyDataSetChanged();
+
                                 // Show the custom template and record an impression.
 //                                mainAdapter.notifyDataSetChanged();
                             }
@@ -159,13 +175,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+
+
         adLoader.loadAd(new PublisherAdRequest.Builder().build());
     }
 
 
     class MyCustomViewHolder{
 
-        public TextView title;
+        public TextView subtitle;
+        public ImageView image;
+        public TextView price;
+        public TextView headline;
+        public TextView body;
     }
 
     class MyAdViewHolder{
